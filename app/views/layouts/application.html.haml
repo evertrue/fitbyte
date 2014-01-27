@@ -1,0 +1,33 @@
+!!!
+%html
+  %head
+    %title Fitbyte
+    = stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true
+    = javascript_include_tag "application", "data-turbolinks-track" => true
+    = javascript_include_tag 'https://maps.googleapis.com/maps/api/js?key=AIzaSyCvcsuHuh2OZxgOEE6TdV3jel5EAvPBrBc&sensor=true'
+    = csrf_meta_tags
+    %meta{:content => "initial-scale=1.0, user-scalable=no", :name => "viewport"}/
+    :javascript
+      $( function() {
+        var mapOptions = {
+          center: new google.maps.LatLng(42.3519, -71.0582),
+          zoom: 8
+        };
+
+        var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+
+        $.getJSON('/map/locations?start_at=2013-01-01', function(data) {
+          console.log(data);
+          $.each( data, function(i, loc) {
+            var mkrLL = new google.maps.LatLng(loc.lat, loc.lng);
+
+            var marker = new google.maps.Marker({
+              position: mkrLL,
+              map: map,
+              title: "On " + loc.date
+            });
+          });
+        });
+      });
+    %body
+      = yield
