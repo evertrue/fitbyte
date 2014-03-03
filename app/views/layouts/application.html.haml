@@ -4,7 +4,7 @@
     %title Fitbyte
     = stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true
     = javascript_include_tag "application", "data-turbolinks-track" => true
-    = javascript_include_tag 'https://maps.googleapis.com/maps/api/js?key=AIzaSyCvcsuHuh2OZxgOEE6TdV3jel5EAvPBrBc&sensor=true'
+    = javascript_include_tag "https://maps.googleapis.com/maps/api/js?key=#{ENV['GOOGLE_PUB_KEY']}&sensor=true"
     = csrf_meta_tags
 
   %body
