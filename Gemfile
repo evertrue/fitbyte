@@ -4,7 +4,6 @@ source 'https://rubygems.org'
 gem 'rails', '4.0.2'
 
 # Use sqlite3 as the database for Active Record
-gem 'sqlite3'
 
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.0'
@@ -47,11 +46,16 @@ gem 'less-rails'
 
 gem 'twitter-bootstrap-rails'
 
+group :production do
+  gem 'pg'
+end
+
 group :development, :test do
   gem 'byebug'
   gem 'awesome_print'
   gem 'better_errors'
   gem 'binding_of_caller'
+  gem 'sqlite3'
 end
 
 group :doc do
