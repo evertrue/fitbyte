@@ -1,1 +1,64 @@
-#map-canvas.col-md-9
+.container-fluid
+  .row-fluid
+    .span2.leaderboard
+      - User.rankings.each do |user|
+        .leaderboard_spot
+          = image_tag user.avatar_path, height: 50, width: 50
+          .user_ranking_number= user.rank
+          .user_ranking_name= user.name
+          .ranking_stat= number_with_delimiter user.steps
+        
+    .span10
+      #map-canvas
+
+:javascript
+  $( function() {
+    var service = new google.maps.DirectionsService();
+
+    var mapOptions = {
+      center: new google.maps.LatLng(42.3519, -71.0582),
+      zoom: 8,
+      scaleControl: true,
+      zoomControl: true,
+      panControl: true 
+    };
+
+    var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+
+    var bounds = new google.maps.LatLngBounds ();
+
+    $.getJSON('/map/locations?start_at=2013-01-01', function(data) {
+      console.log(data);
+
+      $.map( data, function(user) {
+        var coordinates = $.map( user.waypoints, function(loc) {
+          var latLng = new google.maps.LatLng(loc.lat, loc.lng);
+          bounds.extend(latLng);
+          return latLng;
+        });
+
+        var walkPath = new google.maps.Polyline({
+          path: coordinates,
+          geodesic: true,
+          strokeColor: '#FF0000',
+          strokeOpacity: 1.0,
+          strokeWeight: 5
+        });
+
+        walkPath.setMap(map);
+
+        var lastWaypoint = coordinates[coordinates.length - 1];
+
+        console.log(lastWaypoint);
+
+        var marker = new google.maps.Marker({
+          position: lastWaypoint,
+          map: map,
+          icon: user.marker_path,
+          title: user.name
+        }); 
+      });
+
+      map.fitBounds (bounds);
+    });
+  });

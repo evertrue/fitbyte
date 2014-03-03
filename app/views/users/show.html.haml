@@ -1,0 +1,55 @@
+#page-wrap
+  #header
+    #back_btn
+    #user_name
+      = @user.name
+    #user_rank
+      = @user.rank
+  #main-content
+    #user_summary
+      #user_avatar
+      #steps_icon
+      #user_steps_total
+        = @user.steps
+      #floors_icon
+      #user_floors_total
+        = @user.floors
+      #freebies
+    #steps_header
+      %h1 Steps
+    #user_steps_min
+      %h2 Low
+      %p= @user.steps(:minimum)
+    #user_steps_max
+      %h2 High
+      %p= @user.steps(:maximum)
+    #user_steps_average
+      %h2 Average
+      %p= @user.steps(:average)
+    #user_steps_surplus
+      %h2 Steps Surplus
+      %p= @user.steps_surplus
+    #user_steps_needed
+      %h2 Steps Needed Per Day
+      %p= @user.steps_needed_per_day
+    #steps_header
+      %h1 Key Competitors
+    .leaderboard{:style => "box-shadow: none"}
+      #user_challengers
+    #steps_header
+      %h1 Floors
+    #user_floors_min
+      %h2 Low
+      %p= @user.floors(:minimum)
+    #user_floors_avg
+      %h2 Average
+      %p= @user.floors(:average)
+    #user_floors_max
+      %h2 High
+      %p= @user.floors(:maximum)
+    #steps_header
+      %h1 Tracking Steps
+    #main-content
+      #profile_steps_goal
+
+= javascript_include_tag 'charts'

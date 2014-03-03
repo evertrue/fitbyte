@@ -1,21 +1,85 @@
 class User < ActiveRecord::Base
+  COMP_START = Date.parse '2014-03-03'
+  COMP_END = COMP_START + 100.days
+  COMP_TOTAL_STEPS = 1000000
+  STEPS_PER_DAY = COMP_TOTAL_STEPS / (COMP_END - COMP_START).to_i
+  
   devise :trackable, :omniauthable
 
   has_many :waypoints
 
+  def competitors
+    index = rank - 1
+    return User.rankings[1] if index == 0
+    return User.rankings[-2] if index == (User.rankings.size - 1)
+
+    [User.rankings[index - 1], User.rankings[index + 1]]
+  end
+
+  def rank
+    User.rankings.find_index(self) + 1
+  end
+
+  def steps_needed
+    COMP_TOTAL_STEPS - steps
+  end
+
+  def steps_needed_per_day
+    steps_needed / (COMP_END - Date.today).to_i
+  end
+
+  def steps_surplus
+    steps - (Date.today - COMP_START).to_i * STEPS_PER_DAY
+  end
+
+  def steps(metric = :sum)
+    waypoints.calculate metric, :steps
+  end
+
+  def floors(metric = :sum)
+    waypoints.calculate metric, :floors
+  end
+
+  def avatar_path
+    [avatar_url, "#{slug}.png"].join
+  end
+
+  def marker_path
+    [avatar_url, "#{slug}_marker.png"].join
+  end
+
   def sync_waypoints
-    log = fitbit.data_by_time_range '/activities/log/distance', base_date: '2013-01-01', end_date: '2014-03-01'
+    base_date = Date.parse '2014-01-01'
+    log = fitbit.data_by_time_range '/activities/log/distance', base_date: base_date, end_date: base_date + 1.year
     days = log['activities-log-distance']
 
     total_dist = 0
+    high_distance = 0
+    low_distance = 0
+
+    Waypoint.find_or_initialize_by user: self, reached_at: base_date - 1.day do |waypoint|
+      location = User.route.locate total_dist
+      waypoint.update lat: location.lat, lng: location.lng
+    end
 
     days.delete_if { |day| day['value'].to_i == 0 }
 
     days.each do |day|
-      total_dist += day['value'].to_f
+      distance = day['value'].to_f 
+      total_dist += distance
+      low_distance = distance if distance < low_distance
+      high_distance = distance if distance > high_distance
+
       location = User.route.locate total_dist
 
-      waypoint = Waypoint.find_or_initialize_by user: self, reached_at: Date.parse(day['dateTime'])
+      waypoint = Waypoint.find_or_initialize_by user: self, reached_at: Date.parse(day['dateTime']) do |wp|
+        summary = fitbit.activities_on_date(day['dateTime'])['summary'] || []
+
+        wp.steps = summary['steps']
+        wp.floors = summary['floors']
+        wp.elevation = summary['elevation']
+      end
+
       waypoint.update lat: location.lat, lng: location.lng
     end
   end
@@ -26,6 +90,10 @@ class User < ActiveRecord::Base
                                    token: fitbit_token, 
                                    secret: fitbit_secret, 
                                    user_id: fitbit_uid
+  end
+
+  def self.rankings
+    @rankings ||= User.all.sort { |u1, u2| u2.steps <=> u1.steps }
   end
 
   def self.route

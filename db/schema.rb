@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140125214837) do
+ActiveRecord::Schema.define(version: 20140303124529) do
 
   create_table "users", force: true do |t|
     t.string   "email",              default: "", null: false
@@ -25,6 +25,9 @@ ActiveRecord::Schema.define(version: 20140125214837) do
     t.string   "fitbit_uid"
     t.string   "fitbit_token"
     t.string   "fitbit_secret"
+    t.string   "name"
+    t.string   "avatar_url"
+    t.string   "slug"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true
@@ -37,6 +40,9 @@ ActiveRecord::Schema.define(version: 20140125214837) do
     t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "steps"
+    t.integer  "floors"
+    t.integer  "elevation"
   end
 
 end

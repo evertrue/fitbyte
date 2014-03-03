@@ -5,7 +5,7 @@ class MapController < ApplicationController
   end
 
   def locations
-    render json: current_user.waypoints.where(reached_at: @start_at.beginning_of_day..@end_at.end_of_day).order(:reached_at)
+    render json: User.all, include: { waypoints: { only: [ :lat, :lng, :reached_at ] } }, only: [ :id, :name], methods: [:marker_path]
   end
 
   private
