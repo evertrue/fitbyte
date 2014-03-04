@@ -49,8 +49,7 @@ class User < ActiveRecord::Base
   end
 
   def sync_waypoints
-    base_date = Date.parse '2014-01-01'
-    log = fitbit.data_by_time_range '/activities/log/distance', base_date: base_date, end_date: base_date + 1.year
+    log = fitbit.data_by_time_range '/activities/log/distance', base_date: COMP_START, end_date: COMP_START + 1.year
     days = log['activities-log-distance']
 
     total_dist = 0
