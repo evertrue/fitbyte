@@ -53,12 +53,14 @@
             '<div id="siteNotice">'+
             '</div>'+
             '<h1 id="firstHeading" class="firstHeading">'+
-            user.name +
+            user.name + ' (' + user.rank + ')' +
             '</h1>'+
             '<div id="bodyContent">'+
             '<p><dl>'+
             '<dt>Total Steps</dt><dd>' + user.steps + '</dd>'+
             '<dt>Total Floors</dt><dd>' + user.floors + '</dd>'+
+            '<dt>Steps Needed</dt><dd>' + user.steps_needed + '</dd>'+
+            '<dt>Steps Needed per Day</dt><dd>' + user.steps_needed_per_day + '</dd>'+
             '</dl></p>'+
             '</div>'+
             '</div>';
