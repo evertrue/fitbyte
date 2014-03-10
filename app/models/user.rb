@@ -3,7 +3,9 @@ class User < ActiveRecord::Base
   COMP_END = COMP_START + 100.days
   COMP_TOTAL_STEPS = 1000000
   STEPS_PER_DAY = COMP_TOTAL_STEPS / (COMP_END - COMP_START).to_i
-  
+
+  AVATAR_URL = 'http://challenge.evertrue.com.s3.amazonaws.com/images/avatars/'
+
   devise :trackable, :omniauthable
 
   has_many :waypoints
@@ -41,11 +43,11 @@ class User < ActiveRecord::Base
   end
 
   def avatar_path
-    [avatar_url, "#{slug}.png"].join
+    [AVATAR_URL, "#{slug}.png"].join
   end
 
   def marker_path
-    [avatar_url, "#{slug}_marker.png"].join
+    [AVATAR_URL, "#{slug}_marker.png"].join
   end
 
   def sync_waypoints
