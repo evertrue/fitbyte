@@ -49,14 +49,31 @@
 
         var lastWaypoint = coordinates[coordinates.length - 1];
 
-        console.log(lastWaypoint);
+        var contentString = '<div id="content">'+
+            '<div id="siteNotice">'+
+            '</div>'+
+            '<h1 id="firstHeading" class="firstHeading">'+
+            user.name +
+            '</h1>'+
+            '<div id="bodyContent">'+
+            '<p><dl>'+
+            '<dt>Total Steps</dt><dd>' + user.steps + '</dd>'+
+            '<dt>Total Floors</dt><dd>' + user.floors + '</dd>'+
+            '</dl></p>'+
+            '</div>'+
+            '</div>';
+        var infowindow = new google.maps.InfoWindow({ content: contentString });
 
         var marker = new google.maps.Marker({
           position: lastWaypoint,
           map: map,
           icon: user.marker_path,
           title: user.name
-        }); 
+        });
+
+        google.maps.event.addListener(marker, 'click', function() {
+          infowindow.open(map,marker);
+        });
       });
 
       map.fitBounds (bounds);
