@@ -1,13 +1,16 @@
 .container-fluid
   .row-fluid
-    .span2.leaderboard
-      - User.rankings.each do |user|
-        .leaderboard_spot
-          = image_tag user.avatar_path, height: 50, width: 50
-          .user_ranking_number= user.rank
-          .user_ranking_name= user.name
-          .ranking_stat= number_with_delimiter user.steps
-
+    .span2
+      .leaderboard
+        - User.rankings.each do |user|
+          .leaderboard_spot
+            = image_tag user.avatar_path, height: 50, width: 50
+            .user_ranking_number= user.rank
+            .user_ranking_name= user.name
+            .ranking_stat= number_with_delimiter user.steps
+      - unless current_user
+        .login_spot
+          = link_to 'Join the race with FitBit', user_omniauth_authorize_path(:fitbit), class: 'btn btn-primary'
     .span10
       #map-canvas
 
@@ -57,11 +60,10 @@
             '</h1>'+
             '<div id="bodyContent">'+
             '<p><dl>'+
-            '<dt>Total Steps</dt><dd>' + user.steps + '</dd>'+
-            '<dt>Total Floors</dt><dd>' + user.floors + '</dd>'+
-            '<dt>Avdt><dd>' + user.floors + '</dd>'+
-            '<dt>Steps Needed</dt><dd>' + user.steps_needed + '</dd>'+
-            '<dt>Steps Needed per Day</dt><dd>' + user.steps_needed_per_day + '</dd>'+
+            '<dt>Total Steps</dt><dd>' + user.steps.number_with_delimiter() + '</dd>'+
+            '<dt>Total Floors</dt><dd>' + user.floors.number_with_delimiter()  + '</dd>'+
+            '<dt>Steps Needed</dt><dd>' + user.steps_needed.number_with_delimiter()  + '</dd>'+
+            '<dt>Steps Needed per Day</dt><dd>' + user.steps_needed_per_day.number_with_delimiter()  + '</dd>'+
             '</dl></p>'+
             '</div>'+
             '</div>';

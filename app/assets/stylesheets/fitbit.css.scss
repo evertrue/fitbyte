@@ -307,7 +307,6 @@ h2 {
 }
 
 .leaderboard {
-    float: left;
     width: 100%;
 
     h1 {
@@ -354,6 +353,10 @@ h2 {
         padding: 5px;
         margin-right: 10px;
     }
+}
+
+.login_spot {
+  margin-top: 10px;
 }
 
 .user_comparison {
