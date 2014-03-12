@@ -1,5 +1,5 @@
 class User < ActiveRecord::Base
-  COMP_START = Date.parse '2014-03-03'
+  COMP_START = Date.parse '2014-03-12'
   COMP_END = COMP_START + 100.days
   COMP_TOTAL_STEPS = 1000000
   STEPS_PER_DAY = COMP_TOTAL_STEPS / (COMP_END - COMP_START).to_i
