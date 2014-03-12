@@ -8,11 +8,11 @@
     = csrf_meta_tags
 
   %body
-    .header
+    .row.header
       .header_img
-        %h1.header_text
-          1,000,000 Steps - Race to D.C.
-          .span.pull-right
-            - unless current_user
-              = link_to 'Join with FitBit', user_omniauth_authorize_path(:fitbit), class: 'btn btn-primary'
+      %h1.header_text
+        1,000,000 Steps - Race to D.C.
+      %span.pull-right
+        - unless current_user
+          = link_to 'Join with FitBit', user_omniauth_authorize_path(:fitbit), class: 'btn btn-primary'
     = yield
