@@ -58,10 +58,9 @@ class User < ActiveRecord::Base
     high_distance = 0
     low_distance = 0
 
-    Waypoint.find_or_initialize_by user: self, reached_at: COMP_START - 1.day do |waypoint|
-      location = User.route.locate total_dist
-      waypoint.update lat: location.lat, lng: location.lng
-    end
+    Waypoint.find_or_initialize_by user: self, reached_at: COMP_START - 1.day
+    location = User.route.locate total_dist
+    waypoint.update lat: location.lat, lng: location.lng
 
     days.delete_if { |day| day['value'].to_i == 0 }
 
