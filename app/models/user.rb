@@ -19,7 +19,7 @@ class User < ActiveRecord::Base
   end
 
   def rank
-    User.rankings.find_index(self).to_i + 1
+    User.rankings.find_index(self) + 1
   end
 
   def steps_needed
@@ -43,11 +43,11 @@ class User < ActiveRecord::Base
   end
 
   def avatar_path
-    [AVATAR_URL, "#{ slug || 'mysterio' }.png"].join
+    [AVATAR_URL, "#{slug}.png"].join
   end
 
   def marker_path
-    [AVATAR_URL, "#{ slug || 'mysterio' }_marker.png"].join
+    [AVATAR_URL, "#{slug}_marker.png"].join
   end
 
   def sync_waypoints
@@ -58,9 +58,10 @@ class User < ActiveRecord::Base
     high_distance = 0
     low_distance = 0
 
-    waypoint = Waypoint.find_or_initialize_by user: self, reached_at: COMP_START - 1.day
-    location = User.route.locate total_dist
-    waypoint.update lat: location.lat, lng: location.lng
+    Waypoint.find_or_initialize_by user: self, reached_at: COMP_START - 1.day do |waypoint|
+      location = User.route.locate total_dist
+      waypoint.update lat: location.lat, lng: location.lng
+    end
 
     days.delete_if { |day| day['value'].to_i == 0 }
 
@@ -72,15 +73,14 @@ class User < ActiveRecord::Base
 
       location = User.route.locate total_dist
 
-      waypoint = Waypoint.find_or_initialize_by user: self, reached_at: Date.parse(day['dateTime']) do |wp|
-        summary = fitbit.activities_on_date(day['dateTime'])['summary'] || []
+      summary = fitbit.activities_on_date(day['dateTime'])['summary'] || []
 
-        wp.steps = summary['steps']
-        wp.floors = summary['floors']
-        wp.elevation = summary['elevation']
-      end
-
-      waypoint.update lat: location.lat, lng: location.lng
+      waypoint = Waypoint.find_or_initialize_by user: self, reached_at: Date.parse(day['dateTime'])
+      waypoint.steps = summary['steps']
+      waypoint.floors = summary['floors']
+      waypoint.elevation = summary['elevation']
+      waypoint.lat = location.lat
+      waypoint.lng = location.lng
     end
   end
 
@@ -92,16 +92,11 @@ class User < ActiveRecord::Base
                                    user_id: fitbit_uid
   end
 
-  def self.longest_path
-    top_user = User.rankings.first
-    Route.path_to top_user.waypoints.first, top_user.waypoints.last
-  end
-
   def self.rankings
-    User.all.sort { |u1, u2| u2.steps <=> u1.steps }
+    @rankings ||= User.all.sort { |u1, u2| u2.steps <=> u1.steps }
   end
 
   def self.route
-    Route.new Route.parse_json_file('route.json')
+    @route ||= Route.new Route.parse_json_file('route.json')
   end
 end
