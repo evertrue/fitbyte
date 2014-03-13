@@ -3,6 +3,7 @@ class User < ActiveRecord::Base
   COMP_END = COMP_START + 100.days
   COMP_TOTAL_STEPS = 1000000
   STEPS_PER_DAY = COMP_TOTAL_STEPS / (COMP_END - COMP_START).to_i
+  STEP_DISTANCE = 0.000439
 
   AVATAR_URL = 'http://challenge.evertrue.com.s3.amazonaws.com/images/avatars/'
 
@@ -51,22 +52,22 @@ class User < ActiveRecord::Base
   end
 
   def sync_waypoints
-    log = fitbit.data_by_time_range '/activities/log/distance', base_date: COMP_START, end_date: COMP_START + 1.year
-    days = log['activities-log-distance']
+    log = fitbit.data_by_time_range '/activities/log/steps', base_date: COMP_START, end_date: COMP_START + 1.year
+    days = log['activities-log-steps']
 
     total_dist = 0
     high_distance = 0
     low_distance = 0
 
     Waypoint.find_or_initialize_by user: self, reached_at: COMP_START - 1.day do |waypoint|
-      location = User.route.locate total_dist
+      location = User.route.locate 0
       waypoint.update lat: location.lat, lng: location.lng
     end
 
     days.delete_if { |day| day['value'].to_i == 0 }
 
     days.each do |day|
-      distance = day['value'].to_f 
+      distance = day['value'].to_f * STEP_DISTANCE
       total_dist += distance
       low_distance = distance if distance < low_distance
       high_distance = distance if distance > high_distance
@@ -75,7 +76,7 @@ class User < ActiveRecord::Base
 
       summary = fitbit.activities_on_date(day['dateTime'])['summary'] || []
 
-      waypoint = Waypoint.find_or_initialize_by user: self, reached_at: Date.parse(day['dateTime'])
+      waypoint = waypoints.find_or_initialize_by reached_at: Date.parse(day['dateTime'])
       waypoint.steps = summary['steps']
       waypoint.floors = summary['floors']
       waypoint.elevation = summary['elevation']
@@ -95,7 +96,7 @@ class User < ActiveRecord::Base
   end
 
   def self.rankings
-    @rankings ||= User.all.sort { |u1, u2| u2.steps <=> u1.steps }
+    User.all.sort { |u1, u2| u2.steps <=> u1.steps }
   end
 
   def self.route
