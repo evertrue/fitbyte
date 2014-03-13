@@ -1,6 +1,6 @@
 .container-fluid
   .row-fluid
-    .span2
+    .span2.sidebar
       - unless current_user
         .login_spot
           = link_to 'Join the race with FitBit', user_omniauth_authorize_path(:fitbit), class: 'btn btn-primary'
