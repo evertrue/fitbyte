@@ -1,6 +1,9 @@
 .container-fluid
   .row-fluid
     .span2
+      - unless current_user
+        .login_spot
+          = link_to 'Join the race with FitBit', user_omniauth_authorize_path(:fitbit), class: 'btn btn-primary'
       .leaderboard
         - User.rankings.each do |user|
           .leaderboard_spot
@@ -8,9 +11,6 @@
             .user_ranking_number= user.rank
             .user_ranking_name= user.name
             .ranking_stat= number_with_delimiter user.steps
-      - unless current_user
-        .login_spot
-          = link_to 'Join the race with FitBit', user_omniauth_authorize_path(:fitbit), class: 'btn btn-primary'
     .span10
       #map-canvas
 

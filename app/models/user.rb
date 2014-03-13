@@ -19,7 +19,7 @@ class User < ActiveRecord::Base
   end
 
   def rank
-    User.rankings.find_index(self) + 1
+    User.rankings.find_index(self).to_i + 1
   end
 
   def steps_needed
@@ -43,11 +43,11 @@ class User < ActiveRecord::Base
   end
 
   def avatar_path
-    [AVATAR_URL, "#{slug}.png"].join
+    [AVATAR_URL, "#{ slug || 'mysterio' }.png"].join
   end
 
   def marker_path
-    [AVATAR_URL, "#{slug}_marker.png"].join
+    [AVATAR_URL, "#{ slug || 'mysterio' }_marker.png"].join
   end
 
   def sync_waypoints
@@ -92,11 +92,16 @@ class User < ActiveRecord::Base
                                    user_id: fitbit_uid
   end
 
+  def self.longest_path
+    top_user = User.rankings.first
+    Route.path_to top_user.waypoints.first, top_user.waypoints.last
+  end
+
   def self.rankings
-    @rankings ||= User.all.sort { |u1, u2| u2.steps <=> u1.steps }
+    User.all.sort { |u1, u2| u2.steps <=> u1.steps }
   end
 
   def self.route
-    @route ||= Route.new Route.parse_json_file('route.json')
+    Route.new Route.parse_json_file('route.json')
   end
 end

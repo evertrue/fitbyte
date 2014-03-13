@@ -2,6 +2,7 @@ class OmniauthCallbacksController < ApplicationController
   def fitbit
     user = User.find_or_initialize_by fitbit_uid: fitbit_uid do |u|
       u.email = fitbit_uid
+      u.name = omniauth.info.name
     end
 
     user.update fitbit_credentials
