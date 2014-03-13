@@ -81,6 +81,8 @@ class User < ActiveRecord::Base
       waypoint.elevation = summary['elevation']
       waypoint.lat = location.lat
       waypoint.lng = location.lng
+
+      waypoint.save
     end
   end
 
