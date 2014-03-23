@@ -8,6 +8,10 @@ class MapController < ApplicationController
     render json: User.all, include: { waypoints: { only: [ :lat, :lng, :reached_at ] } }, only: [ :id, :name], methods: [:marker_path, :rank, :steps, :floors, :steps_needed, :steps_needed_per_day]
   end
 
+  def route
+    render json: { polyline: User.route.polyline }
+  end
+
   private
 
   def set_filter_dates

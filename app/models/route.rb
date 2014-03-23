@@ -1,9 +1,9 @@
 class Route
-  attr_reader :points
+  attr_reader :points, :polyline
 
   def initialize(points = [])
+    @polyline = Polylines::Encoder.encode_points points
     @points = points.map { |point| Geokit::LatLng.new(*point) }
-
   end
 
   def locate(distance)

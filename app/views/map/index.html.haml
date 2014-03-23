@@ -27,60 +27,65 @@
     };
 
     var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
-
     var bounds = new google.maps.LatLngBounds ();
 
-    $.getJSON('/map/locations?start_at=2013-01-01', function(data) {
+    $.getJSON('/map/route', function(data) { 
       console.log(data);
+      var decodedPath = google.maps.geometry.encoding.decodePath(data.polyline);
 
-      $.map( data, function(user) {
-        var coordinates = $.map( user.waypoints, function(loc) {
-          var latLng = new google.maps.LatLng(loc.lat, loc.lng);
-          bounds.extend(latLng);
-          return latLng;
-        });
-
-        var walkPath = new google.maps.Polyline({
-          path: coordinates,
-          geodesic: true,
-          strokeColor: '#FF0000',
-          strokeOpacity: 1.0,
-          strokeWeight: 5
-        });
-
-        walkPath.setMap(map);
-
-        var lastWaypoint = coordinates[coordinates.length - 1];
-
-        var contentString = '<div id="content">'+
-            '<div id="siteNotice">'+
-            '</div>'+
-            '<h1 id="firstHeading" class="firstHeading">'+
-            user.name + ' (' + user.rank + ')' +
-            '</h1>'+
-            '<div id="bodyContent">'+
-            '<p><dl>'+
-            '<dt>Total Steps</dt><dd>' + user.steps.number_with_delimiter() + '</dd>'+
-            '<dt>Total Floors</dt><dd>' + user.floors.number_with_delimiter()  + '</dd>'+
-            '<dt>Steps Needed</dt><dd>' + user.steps_needed.number_with_delimiter()  + '</dd>'+
-            '<dt>Steps Needed per Day</dt><dd>' + user.steps_needed_per_day.number_with_delimiter()  + '</dd>'+
-            '</dl></p>'+
-            '</div>'+
-            '</div>';
-        var infowindow = new google.maps.InfoWindow({ content: contentString });
-
-        var marker = new google.maps.Marker({
-          position: lastWaypoint,
-          map: map,
-          icon: user.marker_path,
-          title: user.name
-        });
-
-        google.maps.event.addListener(marker, 'click', function() {
-          infowindow.open(map,marker);
-        });
+      console.log(decodedPath);
+      var route = new google.maps.Polyline({
+        path: decodedPath,
+        strokeColor: '#FF0000',
+        strokeOpacity: 1.0,
+        strokeWeight: 5
       });
 
-      map.fitBounds (bounds);
+      route.setMap(map);
+
+      $.getJSON('/map/locations?start_at=2013-01-01', function(data) {
+        console.log(data);
+  
+        $.map( data, function(user) {
+          var coordinates = $.map( user.waypoints, function(loc) {
+            var latLng = new google.maps.LatLng(loc.lat, loc.lng);
+            bounds.extend(latLng);
+            return latLng;
+          });
+  
+          var lastWaypoint = coordinates[coordinates.length - 1];
+  
+          var contentString = '<div id="content">'+
+              '<div id="siteNotice">'+
+              '</div>'+
+              '<h1 id="firstHeading" class="firstHeading">'+
+              user.name + ' (' + user.rank + ')' +
+              '</h1>'+
+              '<div id="bodyContent">'+
+              '<p><dl>'+
+              '<dt>Total Steps</dt><dd>' + user.steps.number_with_delimiter() + '</dd>'+
+              '<dt>Total Floors</dt><dd>' + user.floors.number_with_delimiter()  + '</dd>'+
+              '<dt>Steps Needed</dt><dd>' + user.steps_needed.number_with_delimiter()  + '</dd>'+
+              '<dt>Steps Needed per Day</dt><dd>' + user.steps_needed_per_day.number_with_delimiter()  + '</dd>'+
+              '</dl></p>'+
+              '</div>'+
+              '</div>';
+          var infowindow = new google.maps.InfoWindow({ content: contentString });
+  
+          var marker = new google.maps.Marker({
+            position: lastWaypoint,
+            map: map,
+            icon: user.marker_path,
+            title: user.name
+          });
+  
+          google.maps.event.addListener(marker, 'click', function() {
+            infowindow.open(map,marker);
+          });
+        });
+  
+        map.fitBounds (bounds);
+      });
+
     });
   });

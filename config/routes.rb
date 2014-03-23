@@ -3,6 +3,7 @@ Fitbyte::Application.routes.draw do
 
   namespace :map do
     get :locations
+    get :route
   end
 
   resources :users, only: :show
