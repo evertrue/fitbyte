@@ -51,6 +51,10 @@ class User < ActiveRecord::Base
     [AVATAR_URL, "#{slug}_marker.png"].join
   end
 
+  def location
+    waypoints.last
+  end
+
   def sync_waypoints
     log = fitbit.data_by_time_range '/activities/log/steps', base_date: COMP_START, end_date: COMP_START + 1.year
     days = log['activities-log-steps']

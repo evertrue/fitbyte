@@ -47,13 +47,8 @@
         console.log(data);
   
         $.map( data, function(user) {
-          var coordinates = $.map( user.waypoints, function(loc) {
-            var latLng = new google.maps.LatLng(loc.lat, loc.lng);
-            bounds.extend(latLng);
-            return latLng;
-          });
-  
-          var lastWaypoint = coordinates[coordinates.length - 1];
+          var latLng = new google.maps.LatLng(user.location.lat, user.location.lng);
+          bounds.extend(latLng);
   
           var contentString = '<div id="content">'+
               '<div id="siteNotice">'+
@@ -73,7 +68,7 @@
           var infowindow = new google.maps.InfoWindow({ content: contentString });
   
           var marker = new google.maps.Marker({
-            position: lastWaypoint,
+            position: latLng,
             map: map,
             icon: user.marker_path,
             title: user.name
