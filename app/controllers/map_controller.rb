@@ -5,7 +5,7 @@ class MapController < ApplicationController
   end
 
   def locations
-    render json: User.all, include: { waypoints: { only: [ :lat, :lng, :reached_at ] } }, only: [ :id, :name], methods: [:marker_path, :rank, :steps, :floors, :steps_needed, :steps_needed_per_day]
+    @users = User.all
   end
 
   def route
