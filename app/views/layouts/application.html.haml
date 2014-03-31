@@ -14,3 +14,9 @@
         1,000,000 Steps - Race to D.C.
 
     = yield
+
+:javascript
+  $( function() {
+      var days = moment('2014-03-12').add('days', 100).diff(moment(), 'days');
+      $('.header_text').append(' - ' + days + ' days left');
+    });
